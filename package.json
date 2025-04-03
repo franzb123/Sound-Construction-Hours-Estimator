@@ -4,14 +4,9 @@
   "description": "Construction project hours estimation tool",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve .",
-    "build": "echo 'No build step required'"
+    "start": "echo 'No start script needed'"
   },
   "keywords": ["construction", "hours", "estimator"],
   "author": "Sound Construction",
-  "license": "MIT",
-  "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
-  }
+  "license": "MIT"
 }
