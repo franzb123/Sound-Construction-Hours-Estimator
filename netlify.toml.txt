@@ -2,6 +2,12 @@
   command = "echo 'No build step required'"
   publish = "."
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
