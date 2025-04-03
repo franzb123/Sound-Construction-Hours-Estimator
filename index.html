@@ -13,13 +13,163 @@
     <div id="root"></div>
     
     <script type="text/babel">
-        // Simplified React component to ensure something renders
+        // Construction Categories and Tasks
+        const WORK_CATEGORIES = {
+            residential: {
+                name: 'Residential Construction',
+                tasks: {
+                    houseFoundation: { name: 'House Foundation', baseHours: 80, complexity: 1 },
+                    frameWalls: { name: 'Framing Walls', baseHours: 120, complexity: 1.2 },
+                    roofInstallation: { name: 'Roof Installation', baseHours: 96, complexity: 1.3 },
+                    interiorFinishing: { name: 'Interior Finishing', baseHours: 160, complexity: 1.5 }
+                }
+            },
+            commercial: {
+                name: 'Commercial Construction',
+                tasks: {
+                    officeBuilding: { name: 'Office Building Framing', baseHours: 240, complexity: 1.4 },
+                    retailSpace: { name: 'Retail Space Construction', baseHours: 200, complexity: 1.3 },
+                    warehouseStructure: { name: 'Warehouse Structure', baseHours: 280, complexity: 1.5 }
+                }
+            },
+            renovation: {
+                name: 'Renovation Projects',
+                tasks: {
+                    kitchenRemodel: { name: 'Kitchen Remodel', baseHours: 100, complexity: 1.4 },
+                    bathroomUpgrade: { name: 'Bathroom Upgrade', baseHours: 80, complexity: 1.3 },
+                    historicPreservation: { name: 'Historic Building Restoration', baseHours: 200, complexity: 1.6 }
+                }
+            }
+        };
+
         function ConstructionHoursEstimator() {
+            const [category, setCategory] = React.useState('');
+            const [task, setTask] = React.useState('');
+            const [projectSize, setProjectSize] = React.useState('standard');
+            const [estimatedHours, setEstimatedHours] = React.useState(null);
+            const [availableTasks, setAvailableTasks] = React.useState({});
+
+            // Calculate project hours
+            const calculateProjectHours = () => {
+                if (!category || !task) return null;
+
+                const selectedTask = WORK_CATEGORIES[category].tasks[task];
+                let hours = selectedTask.baseHours;
+
+                // Adjust hours based on project size
+                switch (projectSize) {
+                    case 'small':
+                        hours *= 0.7;
+                        break;
+                    case 'large':
+                        hours *= 1.5;
+                        break;
+                    default: // standard
+                        hours *= 1;
+                }
+
+                // Apply complexity factor
+                hours *= selectedTask.complexity;
+
+                return Math.round(hours);
+            };
+
+            // Update available tasks when category changes
+            React.useEffect(() => {
+                if (category) {
+                    setAvailableTasks(WORK_CATEGORIES[category].tasks);
+                    setTask(''); // Reset task when category changes
+                }
+            }, [category]);
+
+            const handleEstimate = () => {
+                const hours = calculateProjectHours();
+                setEstimatedHours(hours);
+            };
+
             return (
-                <div className="container mx-auto p-4">
-                    <h1 className="text-2xl font-bold text-center">
-                        Sound Construction Hours Estimator
-                    </h1>
+                <div className="max-w-md mx-auto p-4">
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <h1 className="text-2xl font-bold text-center mb-6">
+                            Sound Construction Hours Estimator
+                        </h1>
+
+                        {/* Project Category Selection */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-bold mb-2">
+                                Project Category
+                            </label>
+                            <select 
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="w-full px-3 py-2 border rounded-lg"
+                            >
+                                <option value="">Select Category</option>
+                                {Object.entries(WORK_CATEGORIES).map(([key, cat]) => (
+                                    <option key={key} value={key}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Task Selection */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-bold mb-2">
+                                Specific Task
+                            </label>
+                            <select 
+                                value={task}
+                                onChange={(e) => setTask(e.target.value)}
+                                disabled={!category}
+                                className="w-full px-3 py-2 border rounded-lg"
+                            >
+                                <option value="">Select Task</option>
+                                {Object.entries(availableTasks).map(([key, taskItem]) => (
+                                    <option key={key} value={key}>
+                                        {taskItem.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Project Size */}
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-bold mb-2">
+                                Project Size
+                            </label>
+                            <select 
+                                value={projectSize}
+                                onChange={(e) => setProjectSize(e.target.value)}
+                                className="w-full px-3 py-2 border rounded-lg"
+                            >
+                                <option value="small">Small</option>
+                                <option value="standard">Standard</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+
+                        {/* Estimate Button */}
+                        <button 
+                            onClick={handleEstimate}
+                            disabled={!category || !task}
+                            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
+                        >
+                            Estimate Project Hours
+                        </button>
+
+                        {/* Results Display */}
+                        {estimatedHours !== null && (
+                            <div className="mt-4 p-3 bg-gray-100 rounded-lg text-center">
+                                <p className="text-xl font-bold text-blue-700">
+                                    Estimated Project Hours: {estimatedHours}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Based on project complexity and size
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             );
         }
