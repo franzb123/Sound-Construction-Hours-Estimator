@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish = "build"
+  command = "echo 'No build step required'"
+  publish = "."
 
 [[redirects]]
   from = "/*"
